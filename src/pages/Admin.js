@@ -22,7 +22,7 @@ const AdminPortal = () => {
     try {
       const query = new Parse.Query("Enrollments");
       query.descending("createdAt");
-      const results = await query.find();
+      const results = await query.find(); 
       setRequests(results);
     } catch (error) {
       console.error("Error fetching enrollments:", error);
@@ -31,16 +31,20 @@ const AdminPortal = () => {
     }
   };
 
+  // --- အဓိက ပြင်ဆင်ထားသော အပိုင်း (Approve Logic) ---
   const handleApprove = async (id) => {
     try {
-      const query = new Parse.Query("Enrollments");
-      const object = await query.get(id);
-      object.set("status", "approved");
-      await object.save();
-      alert("Mission Approved! ✅ ကျောင်းသား Status စစ်ရင် Approved ပြနေပါပြီ။");
+      // ၁။ မူရင်း query.get() အစား Cloud Function ကို လှမ်းခေါ်ပြီး Approve လုပ်ခိုင်းပါမယ်
+      // အဲ့ဒါမှ Master Key နဲ့ Database ထဲမှာ တကယ် Update ဖြစ်မှာပါ
+      await Parse.Cloud.run("approveEnrollment", { enrollmentId: id });
+      
+      alert("Mission Approved! ✅ Database Updated.");
+      
+      // ၂။ UI မှာ ချက်ချင်း Update ဖြစ်အောင် စာရင်းပြန်ခေါ်မယ်
       fetchEnrollments();
     } catch (error) {
-      alert(error.message);
+      console.error("Approve Error:", error);
+      alert("Error: " + error.message + "\n(Cloud Code ကို Deploy အရင်လုပ်ထားဖို့ လိုအပ်ပါတယ်)");
     }
   };
 
@@ -48,7 +52,6 @@ const AdminPortal = () => {
     e.preventDefault();
     setAddStatus('Processing...');
     
-    // Database ထဲမှာ Classes ဆိုတဲ့ Class Name နဲ့ သိမ်းမှာပါ
     const Course = Parse.Object.extend("Classes");
     const newCourse = new Course();
     
@@ -56,14 +59,13 @@ const AdminPortal = () => {
       newCourse.set("courseId", courseData.courseId.toLowerCase());
       newCourse.set("title", courseData.title);
       newCourse.set("instructor", courseData.instructor);
-      newCourse.set("zoomLink", courseData.zoomLink); // ဒီနေရာလေးမှာ Zoom Link ထည့်ဖို့ ကျန်နေခဲ့တာ ဖြည့်ပေးလိုက်ပါတယ်
+      newCourse.set("zoomLink", courseData.zoomLink);
       newCourse.set("videoLink", courseData.videoLink);
       newCourse.set("schedule", courseData.schedule);
       
       await newCourse.save();
       
       setAddStatus('New Class Added Successfully! ✅');
-      // Form ကို ပြန်ရှင်းလိုက်တာပါ
       setCourseData({ courseId: '', title: '', instructor: '', zoomLink: '', videoLink: '', schedule: '' });
     } catch (error) { 
       setAddStatus('Error: ' + error.message); 
@@ -130,7 +132,7 @@ const AdminPortal = () => {
       {/* SECTION 2: ADD NEW COURSE */}
       <div style={{ maxWidth: '600px', margin: '0 auto' }}>
         <h1 style={{ textAlign: 'center' }}>➕ ADD / UPDATE CLASS</h1>
-        <p style={{ textAlign: 'center', color: '#8892b0', fontSize: '13px' }}>သင်တန်းအချက်အလက်များကို Database ထဲသို့ တိုက်ရိုက်သိမ်းဆည်းရန်</p>
+        <p style={{ textAlign: 'center', color: '#8892b0', fontSize: '13px' }}>သင်တန်းအချက်အလက်များကို Database ထသို့ တိုက်ရိုက်သိမ်းဆည်းရန်</p>
         
         <form onSubmit={handleSubmitCourse} style={styles.form}>
           <div style={styles.inputGroup}>

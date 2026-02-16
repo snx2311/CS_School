@@ -7,12 +7,12 @@ const Home = () => {
   
   // Courses Data (မူရင်းအတိုင်း)
   const [courses] = useState([
-    { id: "linux", title: "Linux Admin", price: "150,000 MMK", duration: "2 Months", req: "Basic Computer,less than RAM 8 And 256GB", vidId: "yv_vPAtE_kQ", img: "https://images.unsplash.com/photo-1629654297299-c8506221ca97", detail: "Master Linux CLI, Server Management, and Security Auditing.", introDes: "Linux သည် server လောက၏ ဘုရင်ဖြစ်သည်။ Enterprise Server များ တည်ဆောက်ပုံကို လက်တွေ့သင်ကြားရမည်။", instructorName: "Dr. May Mi Ko Ko", instructorImg: "images/919888af5779d83aa33de5790bf7eb72.jpg" },
-    { id: "cyber", title: "Cyber Security", price: "200,000 MMK", duration: "2 Months", req: "Network Basics,Basic Computer,less than RAM 8 And 256GB", vidId: "Z3_6qJ0pGno", img: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b", detail: "Learn Threat Hunting, SOC Analysis, and Incident Response.", introDes: "Security Analyst တစ်ယောက်ဖြစ်ဖို့ လိုအပ်တဲ့ SOC Operations များကို Lab များဖြင့် လက်တွေ့လေ့ကျင့်ရမည်။", instructorName: "U Kyaw Naing", instructorImg: "images/images (1).jpeg" },
-    { id: "net", title: "Networking", price: "150,000 MMK", duration: "2 Months", req: "Basic Computer,less than RAM 8 And 256GB", vidId: "09Z_yK_hS3k", img: "https://images.unsplash.com/photo-1544197150-b99a580bb7a8", detail: "Deep dive into CCNA level Networking and Protocols.", introDes: "Network အခြေခံမှစ၍ Router/Switch များ configuration လုပ်ပုံအထိ စနစ်တကျ သင်ကြားပေးမည်။", instructorName: "CISCO GURU", instructorImg: "https://api.dicebear.com/7.x/avataaars/svg?seed=Max" },
-    { id: "py_basic", title: "Python Basic", price: "100,000 MMK", duration: "1.5 Months", req: "Logic,Basic Computer,less than RAM 8 And 256GB", vidId: "mX4Z0D_vL_A", img: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5", detail: "Fundamentals of Programming and Automation.", introDes: "Programming လောကထဲ စတင်ဝင်ရောက်မည့်သူများအတွက် အခြေခံအကျဆုံးသင်တန်းဖြစ်သည်။", instructorName: "PY MASTER", instructorImg: "https://api.dicebear.com/7.x/avataaars/svg?seed=Caleb" },
-    { id: "py_adv", title: "Python Adv", price: "200,000 MMK", duration: "2 Months", req: "Python Basic", vidId: "X_9e6XmS-Y0", img: "https://images.unsplash.com/photo-1515879218367-8466d910aaa4", detail: "Object Oriented Programming and Web Frameworks.", introDes: "Python ကို အဆင့်မြင့်အသုံးပြုပြီး Web Application များ ရေးသားလိုသူများအတွက်ဖြစ်သည်။", instructorName: "ADV DEV", instructorImg: "https://api.dicebear.com/7.x/avataaars/svg?seed=Tyler" },
-    { id: "hacking", title: "World Hacking", price: "150,000 MMK", duration: "4 Months", req: "Linux/Network", vidId: "f9p233_rMSc", img: "https://images.unsplash.com/photo-1563986768609-322da13575f3", detail: "Real-world Pentesting and Exploitation.", introDes: "Ethical Hacking ကို စနစ်တကျလေ့လာပြီး Bug Bounty ရှာဖွေလိုသူများအတွက် အကောင်းဆုံးဖြစ်သည်။", instructorName: "DARK KNIGHT", instructorImg: "https://api.dicebear.com/7.x/avataaars/svg?seed=Shadow" }
+    { id: "linux", title: "Linux Admin", price: "150,000 MMK", duration: "2 Months", req: "Basic Computer,less than RAM 8 And 256GB", vidId: "yv_vPAtE_kQ", img: "images/linux.jpg", detail: "Master Linux CLI, Server Management, and Security Auditing.", introDes: "Linux သည် server လောက၏ ဘုရင်ဖြစ်သည်။ Enterprise Server များ တည်ဆောက်ပုံကို လက်တွေ့သင်ကြားရမည်။", instructorName: "Dr. May Mi Ko Ko", instructorImg: "images/919888af5779d83aa33de5790bf7eb72.jpg" },
+    { id: "cyber", title: "Cyber Security", price: "200,000 MMK", duration: "2 Months", req: "Network Basics,Basic Computer,less than RAM 8 And 256GB", vidId: "Z3_6qJ0pGno", img: "images/CS.jpg", detail: "Learn Threat Hunting, SOC Analysis, and Incident Response.", introDes: "Security Analyst တစ်ယောက်ဖြစ်ဖို့ လိုအပ်တဲ့ SOC Operations များကို Lab များဖြင့် လက်တွေ့လေ့ကျင့်ရမည်။", instructorName: "U Kyaw Naing", instructorImg: "images/images (1).jpeg" },
+    { id: "net", title: "Networking", price: "150,000 MMK", duration: "2 Months", req: "Basic Computer,less than RAM 8 And 256GB", vidId: "09Z_yK_hS3k", img: "images/Net.jpg", detail: "Deep dive into CCNA level Networking and Protocols.", introDes: "Network အခြေခံမှစ၍ Router/Switch များ configuration လုပ်ပုံအထိ စနစ်တကျ သင်ကြားပေးမည်။", instructorName: "CISCO GURU", instructorImg: "https://api.dicebear.com/7.x/avataaars/svg?seed=Max" },
+    { id: "py_basic", title: "Python Basic", price: "100,000 MMK", duration: "1.5 Months", req: "Logic,Basic Computer,less than RAM 8 And 256GB", vidId: "mX4Z0D_vL_A", img: "images/python1.jpg", detail: "Fundamentals of Programming and Automation.", introDes: "Programming လောကထဲ စတင်ဝင်ရောက်မည့်သူများအတွက် အခြေခံအကျဆုံးသင်တန်းဖြစ်သည်။", instructorName: "PY MASTER", instructorImg: "https://api.dicebear.com/7.x/avataaars/svg?seed=Caleb" },
+    { id: "py_adv", title: "Python Adv", price: "200,000 MMK", duration: "2 Months", req: "Python Basic", vidId: "X_9e6XmS-Y0", img: "images/Features_Of_Python_1_f4ccd6d9f7.jpg", detail: "Object Oriented Programming and Web Frameworks.", introDes: "Python ကို အဆင့်မြင့်အသုံးပြုပြီး Web Application များ ရေးသားလိုသူများအတွက်ဖြစ်သည်။", instructorName: "ADV DEV", instructorImg: "https://api.dicebear.com/7.x/avataaars/svg?seed=Tyler" },
+    { id: "hacking", title: "World Hacking", price: "150,000 MMK", duration: "4 Months", req: "Linux/Network", vidId: "f9p233_rMSc", img: "images/imagen-ilustrativa-hacking-etico.png", detail: "Real-world Pentesting and Exploitation.", introDes: "Ethical Hacking ကို စနစ်တကျလေ့လာပြီး Bug Bounty ရှာဖွေလိုသူများအတွက် အကောင်းဆုံးဖြစ်သည်။", instructorName: "DARK KNIGHT", instructorImg: "https://api.dicebear.com/7.x/avataaars/svg?seed=Shadow" }
   ]);
 
   const [selectedCourse, setSelectedCourse] = useState(null);
@@ -52,17 +52,11 @@ const Home = () => {
     if (file) { setReceiptFile(file); setReceiptPreview(URL.createObjectURL(file)); }
   };
 
-  // ADMIN PAGE တွင် ပေါ်လာစေရန် ACL ထည့်သွင်းပြင်ဆင်ထားသော Function
   const handleSubmitMission = async () => {
     if (!studentName || !phoneNumber || !receiptFile) { alert("အချက်အလက်အားလုံး ဖြည့်စွက်ပေးပါ။"); return; }
-    
-    // SECURITY: Input Sanitization
     const cleanName = studentName.trim();
     const cleanPhone = phoneNumber.trim();
-    if (cleanName.includes("<") || cleanPhone.includes("<")) {
-      alert("Invalid Input Detected!");
-      return;
-    }
+    if (cleanName.includes("<") || cleanPhone.includes("<")) { alert("Invalid Input Detected!"); return; }
 
     setIsSubmitting(true);
     try {
@@ -70,7 +64,6 @@ const Home = () => {
       const enroll = new Enroll();
       const parseFile = new Parse.File("receipt.jpg", receiptFile);
       await parseFile.save();
-      
       enroll.set("studentName", cleanName);
       enroll.set("phoneNumber", cleanPhone);
       enroll.set("courseId", selectedCourse.id);
@@ -78,22 +71,14 @@ const Home = () => {
       enroll.set("paymentMethod", selectedPayment);
       enroll.set("receipt", parseFile);
       enroll.set("status", "pending");
-
-      // +++ ADMIN ဆီတွင် DATA ပေါ်လာစေရန် ACL သတ်မှတ်ချက် +++
       const acl = new Parse.ACL();
-      acl.setPublicReadAccess(true);   // Admin Page က Query လုပ်လျှင် မြင်ရစေရန်
-      acl.setPublicWriteAccess(false);  // မည်သူမှ လာရောက်ပြင်ဆင်ခြင်း မပြုနိုင်စေရန်
+      acl.setPublicReadAccess(true);
+      acl.setPublicWriteAccess(false);
       enroll.setACL(acl);
-      // ++++++++++++++++++++++++++++++++++++++++++++++
-      
       await enroll.save();
       alert("Mission Request Sent! 🚀 ၁၅ မိနစ်ခန့်စောင့်ဆိုင်းပေးပါ။");
       setShowEnrollForm(false); setSelectedCourse(null); setReceiptFile(null); setReceiptPreview(null);
-    } catch (error) { 
-      alert(error.message); 
-    } finally { 
-      setIsSubmitting(false); 
-    }
+    } catch (error) { alert(error.message); } finally { setIsSubmitting(false); }
   };
 
   const checkMyStatus = async () => {
@@ -103,10 +88,7 @@ const Home = () => {
       if (result) {
         setStatusResult(result);
         if (result.status === 'approved') {
-          localStorage.setItem("approvedEnrollment", JSON.stringify({ 
-            courseId: result.courseId, 
-            phoneNumber: checkPhone 
-          }));
+          localStorage.setItem("approvedEnrollment", JSON.stringify({ courseId: result.courseId, phoneNumber: checkPhone }));
         }
       } else { alert("ဒီဖုန်းနံပါတ်နဲ့ စာရင်းသွင်းထားတာ မရှိသေးပါဘူး။"); }
     } catch (e) { alert("ရှာမတွေ့ပါ။ ဖုန်းနံပါတ် ပြန်စစ်ပေးပါ။"); }
@@ -117,16 +99,21 @@ const Home = () => {
       <style>
         {`
           @keyframes autoLoop { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-          .slider-track { display: flex; width: max-content; animation: autoLoop 40s linear infinite; }
+          .slider-track { display: flex; width: max-content; animation: autoLoop 30s linear infinite; }
           .slider-track:hover { animation-play-state: paused; }
           .social-icon:hover { transform: scale(1.2); }
+          
+          /* 3D Card Hover Effect */
+          .mission-card { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer; position: relative; }
+          .mission-card:hover { transform: translateY(-15px) rotateX(5deg) rotateY(2deg); box-shadow: 0 20px 40px rgba(0, 255, 65, 0.3); border-color: #00ff41 !important; }
+          .mission-card:hover .mission-img { transform: scale(1.1); }
+          .mission-img { transition: transform 0.6s ease; }
+
           @media (max-width: 768px) {
             .navbar { flex-direction: column !important; height: auto !important; padding: 15px !important; gap: 10px; }
-            .nav-left, .nav-right { width: 100%; justify-content: center !important; }
             .school-name { font-size: 0.75rem !important; }
             .header-logo { height: 50px !important; }
-            .founder-img { width: 55px !important; height: 55px !important; }
-            .footer-content { flex-direction: column !important; text-align: center !important; gap: 20px !important; }
+            .hero-slide-item { width: 100vw !important; height: 50vh !important; }
           }
         `}
       </style>
@@ -148,32 +135,28 @@ const Home = () => {
         </div>
       </nav>
 
-      {/* FOUNDER MODAL */}
+      {/* FOUNDER MODAL (မူရင်းအတိုင်း) */}
       {showFounderCard && (
         <div style={styles.modalOverlay} onClick={() => setShowFounderCard(false)}>
             <div style={styles.founderCard} onClick={e => e.stopPropagation()}>
                 <img src="images/photo_2026-02-16_07-54-03.jpg" alt="Founder" style={styles.largeFounderImg} />
                 <h2 style={{color: '#00ff41', margin: '10px 0'}}>U Kaung Myat Bhone</h2>
                 <p style={{color: '#8892b0', fontSize: '14px'}}>B.SC(Computer)DSA | Diploma in Law</p>
-                <div style={styles.founderBody}>
-                    <p style={{color: '#fff', fontSize: '13px', lineHeight: '1.6'}}>
-                        နည်းပညာလောကမှာ အမှန်တကယ် တတ်မြောက်ကျွမ်းကျင်တဲ့ မျိုးဆက်သစ်လူငယ်တွေ ပေါ်ထွက်လာဖို့အတွက် ရည်ရွယ်ပြီး CSA ကို တည်ထောင်ခဲ့တာဖြစ်ပါတယ်။
-                    </p>
-                </div>
+                <div style={styles.founderBody}><p style={{color: '#fff', fontSize: '13px', lineHeight: '1.6'}}>နည်းပညာလောကမှာ အမှန်တကယ် တတ်မြောက်ကျွမ်းကျင်တဲ့ မျိုးဆက်သစ်လူငယ်တွေ ပေါ်ထွက်လာဖို့အတွက် ရည်ရွယ်ပြီး CSA ကို တည်ထောင်ခဲ့တာဖြစ်ပါတယ်။</p></div>
                 <button style={styles.abortBtn} onClick={() => setShowFounderCard(false)}>CLOSE</button>
             </div>
         </div>
       )}
 
-      {/* HERO SLIDER */}
+      {/* HERO SLIDER - Background Full Width Style */}
       <div style={styles.heroSection}>
         <div style={styles.sliderContainer}>
           <div className="slider-track">
             {[...courses, ...courses].map((course, idx) => (
-              <div key={`${course.id}-${idx}`} style={{...styles.loopItem, backgroundImage: `url(${course.img})`}} onClick={() => setSelectedCourse(course)}>
+              <div key={`${course.id}-${idx}`} className="hero-slide-item" style={{...styles.loopItem, backgroundImage: `linear-gradient(to bottom, rgba(10,25,47,0.2), rgba(10,25,47,1)), url(${course.img})`}} onClick={() => setSelectedCourse(course)}>
                 <div style={styles.loopContent}>
                   <div style={styles.loopTitle}>{course.title}</div>
-                  <div style={styles.loopInstructor}>By {course.instructorName}</div>
+                  <div style={styles.loopInstructor}>Explore Mission with {course.instructorName}</div>
                 </div>
               </div>
             ))}
@@ -181,13 +164,13 @@ const Home = () => {
         </div>
       </div>
 
-      {/* MISSIONS GRID */}
+      {/* MISSIONS GRID - 3D Hover Style */}
       <div style={styles.introContainer}>
         <h2 style={styles.sectionTitle}>[Available Missions]</h2>
         <div style={styles.missionGrid}>
           {courses.map((course) => (
-            <div key={course.id} style={styles.missionShapeCard}>
-              <div style={{...styles.imgWrap, backgroundImage: `url(${course.img})`}}></div>
+            <div key={course.id} className="mission-card" style={styles.missionShapeCard} onClick={() => handleEnrollClick(course)}>
+              <div className="mission-img" style={{...styles.imgWrap, backgroundImage: `url(${course.img})`}}></div>
               <div style={styles.missionText}>
                 <div style={styles.instructorSection}>
                   <div style={styles.miniProfileFrame}><img src={course.instructorImg} alt="pro" style={styles.miniProfileImg} /></div>
@@ -196,17 +179,17 @@ const Home = () => {
                     <span style={styles.instructorNameTag}>{course.instructorName}</span>
                   </div>
                 </div>
-                <h3 style={{ color: '#00ff41', margin: '5px 0', fontSize: '1.4rem' }}>{course.title}</h3>
+                <h3 style={{ color: '#00ff41', margin: '10px 0', fontSize: '1.4rem' }}>{course.title}</h3>
                 <p style={{ fontSize: '12px', color: '#8892b0', height: '40px', overflow: 'hidden' }}>{course.introDes}</p>
-                <div style={{color: '#00ff41', fontSize: '1.1rem', fontWeight: 'bold', margin: '10px 0'}}>{course.price}</div>
-                <button onClick={() => handleEnrollClick(course)} style={styles.shapeBtn}>ENROLL MISSION</button>
+                <div style={{color: '#00ff41', fontSize: '1.2rem', fontWeight: 'bold', margin: '15px 0'}}>{course.price}</div>
+                <button style={styles.shapeBtn}>VIEW MISSION DETAILS</button>
               </div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* ENROLL & STATUS MODALS */}
+      {/* MODALS & FOOTER (မူရင်းအတိုင်း) */}
       {(selectedCourse || showEnrollForm) && (
         <div style={styles.modalOverlay} onClick={() => { setSelectedCourse(null); setShowEnrollForm(false); setReceiptPreview(null); }}>
           <div style={styles.modalContent} onClick={e => e.stopPropagation()}>
@@ -233,13 +216,8 @@ const Home = () => {
                       </div>
                     ))}
                   </div>
-                  <div style={styles.accDisplay}>
-                    <h4 style={{margin: '5px 0', color: '#00ff41'}}>{payments[selectedPayment].acc}</h4>
-                  </div>
-                  <label style={styles.uploadArea}>
-                    <input type="file" hidden onChange={handleFileChange} />
-                    {!receiptPreview ? <div style={{color: '#00ff41'}}>📸 RECEIPT</div> : <img src={receiptPreview} style={{height: '80px'}} alt="Preview" />}
-                  </label>
+                  <div style={styles.accDisplay}><h4 style={{margin: '5px 0', color: '#00ff41'}}>{payments[selectedPayment].acc}</h4></div>
+                  <label style={styles.uploadArea}><input type="file" hidden onChange={handleFileChange} />{!receiptPreview ? <div style={{color: '#00ff41'}}>📸 RECEIPT</div> : <img src={receiptPreview} style={{height: '80px'}} alt="Preview" />}</label>
                   <button style={styles.enrollBtn} onClick={handleSubmitMission} disabled={isSubmitting}>{isSubmitting ? "WAIT..." : "SUBMIT"}</button>
                 </>
               )}
@@ -266,13 +244,9 @@ const Home = () => {
         </div>
       )}
 
-      {/* FOOTER */}
       <footer style={styles.footer}>
         <div style={styles.footerContent} className="footer-content">
-          <div>
-            <h2 style={{ color: '#00ff41', margin: 0 }}>CSA</h2>
-            <p style={{ fontSize: '12px', color: '#8892b0' }}>Empowering Future Tech Leaders.</p>
-          </div>
+          <div><h2 style={{ color: '#00ff41', margin: 0 }}>CSA</h2><p style={{ fontSize: '12px', color: '#8892b0' }}>Empowering Future Tech Leaders.</p></div>
           <div style={{ display: 'flex', gap: '20px' }}>
              <a href="https://www.facebook.com/share/1DgBW43o8Y/" target="_blank" rel="noreferrer"><img src="https://cdn-icons-png.flaticon.com/512/733/733547.png" width="24" className="social-icon" style={styles.socialIcon} alt="FB"/></a>
              <a href="https://t.me/MyATBhone34" target="_blank" rel="noreferrer"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" width="24" className="social-icon" style={styles.socialIcon} alt="TG"/></a>
@@ -299,38 +273,38 @@ const styles = {
   founderCard: { background: '#112240', padding: '30px', border: '1px solid #00ff41', maxWidth: '380px', textAlign: 'center', borderRadius: '15px' },
   largeFounderImg: { width: '110px', height: '110px', borderRadius: '50%', border: '3px solid #00ff41' },
   founderBody: { background: 'rgba(0,255,65,0.05)', padding: '15px', borderRadius: '8px', margin: '15px 0' },
-  heroSection: { paddingTop: '140px', paddingBottom: '50px' },
-  sliderContainer: { width: '100%', overflow: 'hidden' },
-  loopItem: { width: '280px', height: '350px', margin: '0 15px', backgroundSize: 'cover', borderRadius: '12px', border: '1px solid #00ff41', position: 'relative', cursor: 'pointer' },
-  loopContent: { position: 'absolute', bottom: 0, width: '100%', background: 'rgba(10,25,47,0.9)', padding: '15px', boxSizing: 'border-box' },
-  loopTitle: { color: '#00ff41' },
-  loopInstructor: { color: '#8892b0', fontSize: '11px' },
-  introContainer: { padding: '50px 5%' },
-  sectionTitle: { textAlign: 'center', color: '#00ff41' },
-  missionGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '30px' },
-  missionShapeCard: { background: '#112240', border: '1px solid #233554', clipPath: 'polygon(10% 0%, 100% 0%, 100% 90%, 90% 100%, 0% 100%, 0% 10%)' },
-  imgWrap: { height: '160px', backgroundSize: 'cover' },
-  missionText: { padding: '20px', textAlign: 'center' },
-  instructorSection: { display: 'flex', alignItems: 'center', gap: '10px' },
-  miniProfileFrame: { width: '40px', height: '40px', borderRadius: '50%', border: '1px solid #00ff41', overflow: 'hidden' },
+  heroSection: { paddingTop: '90px', height: '70vh', position: 'relative' },
+  sliderContainer: { width: '100%', height: '100%', overflow: 'hidden' },
+  loopItem: { width: '100vw', height: '70vh', backgroundSize: 'cover', backgroundPosition: 'center', position: 'relative', cursor: 'pointer', display: 'flex', alignItems: 'flex-end' },
+  loopContent: { width: '100%', padding: '40px 10%', background: 'linear-gradient(to top, rgba(10,25,47,1), transparent)', boxSizing: 'border-box' },
+  loopTitle: { color: '#00ff41', fontSize: '2.5rem', fontWeight: 'bold', textTransform: 'uppercase' },
+  loopInstructor: { color: '#8892b0', fontSize: '1.2rem', marginTop: '10px' },
+  introContainer: { padding: '80px 5%' },
+  sectionTitle: { textAlign: 'center', color: '#00ff41', fontSize: '2rem', marginBottom: '40px' },
+  missionGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '40px' },
+  missionShapeCard: { background: '#112240', border: '1px solid #233554', borderRadius: '15px', overflow: 'hidden' },
+  imgWrap: { height: '200px', backgroundSize: 'cover', backgroundPosition: 'center' },
+  missionText: { padding: '25px', textAlign: 'center' },
+  instructorSection: { display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '15px' },
+  miniProfileFrame: { width: '45px', height: '45px', borderRadius: '50%', border: '2px solid #00ff41', overflow: 'hidden' },
   miniProfileImg: { width: '100%', height: '100%', objectFit: 'cover' },
-  instructorNameTag: { fontSize: '12px', color: '#fff' },
-  shapeBtn: { width: '100%', padding: '12px', background: '#00ff41', color: '#0a192f', border: 'none', cursor: 'pointer' },
-  modalOverlay: { position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.85)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 2000 },
-  modalContent: { background: '#112240', width: '90%', maxWidth: '450px', border: '1px solid #00ff41', borderRadius: '10px' },
-  modalMain: { padding: '25px', display: 'flex', flexDirection: 'column', gap: '15px' },
-  input: { padding: '12px', background: '#0a192f', border: '1px solid #233554', color: '#00ff41' },
-  paymentFlex: { display: 'flex', justifyContent: 'center', gap: '10px' },
-  payIconBox: { width: '50px', height: '40px', border: '1px solid #233554', display: 'flex', justifyContent: 'center', alignItems: 'center', background: '#fff', cursor: 'pointer' },
+  instructorNameTag: { fontSize: '14px', color: '#fff', fontWeight: 'bold' },
+  shapeBtn: { width: '100%', padding: '15px', background: 'transparent', color: '#00ff41', border: '1px solid #00ff41', cursor: 'pointer', fontWeight: 'bold', textTransform: 'uppercase', transition: '0.3s' },
+  modalOverlay: { position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.9)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 2000 },
+  modalContent: { background: '#112240', width: '90%', maxWidth: '450px', border: '1px solid #00ff41', borderRadius: '15px', boxShadow: '0 0 30px rgba(0,255,65,0.2)' },
+  modalMain: { padding: '30px', display: 'flex', flexDirection: 'column', gap: '20px' },
+  input: { padding: '15px', background: '#0a192f', border: '1px solid #233554', color: '#00ff41', borderRadius: '5px' },
+  paymentFlex: { display: 'flex', justifyContent: 'center', gap: '15px' },
+  payIconBox: { width: '60px', height: '45px', border: '2px solid #233554', display: 'flex', justifyContent: 'center', alignItems: 'center', background: '#fff', cursor: 'pointer', borderRadius: '5px' },
   payLogoImg: { maxWidth: '80%', maxHeight: '80%' },
-  accDisplay: { background: 'rgba(0,255,65,0.05)', padding: '10px', textAlign: 'center' },
-  uploadArea: { border: '2px dashed #233554', padding: '20px', textAlign: 'center', cursor: 'pointer' },
-  enrollBtn: { background: '#00ff41', color: '#0a192f', border: 'none', padding: '12px', cursor: 'pointer' },
-  abortBtn: { background: 'transparent', border: '1px solid #ff4b2b', color: '#ff4b2b', padding: '10px 20px', cursor: 'pointer' },
-  statusBox: { marginTop: '15px', border: '1px solid #233554', padding: '10px' },
-  footer: { padding: '40px 10%', borderTop: '2px solid #00ff41', marginTop: '50px', background: '#112240' },
+  accDisplay: { background: 'rgba(0,255,65,0.1)', padding: '15px', textAlign: 'center', borderRadius: '5px' },
+  uploadArea: { border: '2px dashed #00ff41', padding: '25px', textAlign: 'center', cursor: 'pointer', borderRadius: '10px' },
+  enrollBtn: { background: '#00ff41', color: '#0a192f', border: 'none', padding: '15px', cursor: 'pointer', fontWeight: 'bold', borderRadius: '5px' },
+  abortBtn: { background: 'transparent', border: '1px solid #ff4b2b', color: '#ff4b2b', padding: '12px 25px', cursor: 'pointer', borderRadius: '5px' },
+  statusBox: { marginTop: '20px', border: '1px solid #00ff41', padding: '15px', borderRadius: '5px' },
+  footer: { padding: '60px 10%', borderTop: '2px solid #00ff41', marginTop: '100px', background: '#0a192f' },
   footerContent: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
-  socialIcon: { filter: 'invert(1) brightness(1.5)', cursor: 'pointer' }
+  socialIcon: { filter: 'invert(1) brightness(1.5)', cursor: 'pointer', transition: '0.3s' }
 };
 
 export default Home;
