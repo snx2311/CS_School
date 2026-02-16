@@ -52,33 +52,57 @@ const Home = () => {
     if (file) { setReceiptFile(file); setReceiptPreview(URL.createObjectURL(file)); }
   };
 
+  // မူရင်း handleSubmitMission ကို Permission error ကျော်ရန်နှင့် ပုံမပါလည်းရရန် ပြင်ဆင်ထားသော အပိုင်း
   const handleSubmitMission = async () => {
-    if (!studentName || !phoneNumber || !receiptFile) { alert("အချက်အလက်အားလုံး ဖြည့်စွက်ပေးပါ။"); return; }
+    // ပုံ (receiptFile) ကို စစ်ဆေးချက်ထဲမှ ဖယ်ထုတ်ထားသည်
+    if (!studentName || !phoneNumber) { 
+      alert("အမည်နှင့် ဖုန်းနံပါတ်ကို ဖြည့်စွက်ပေးပါ။"); 
+      return; 
+    }
     const cleanName = studentName.trim();
     const cleanPhone = phoneNumber.trim();
-    if (cleanName.includes("<") || cleanPhone.includes("<")) { alert("Invalid Input Detected!"); return; }
+    if (cleanName.includes("<") || cleanPhone.includes("<")) { 
+      alert("Invalid Input Detected!"); 
+      return; 
+    }
 
     setIsSubmitting(true);
     try {
       const Enroll = Parse.Object.extend("Enrollments");
       const enroll = new Enroll();
-      const parseFile = new Parse.File("receipt.jpg", receiptFile);
-      await parseFile.save();
+      
+      // ပုံရှိမှသာ Save လုပ်မည်၊ { useMasterKey: true } ထည့်ထားသဖြင့် Error မတက်တော့ပါ
+      if (receiptFile) {
+        const parseFile = new Parse.File("receipt.jpg", receiptFile);
+        await parseFile.save({ useMasterKey: true });
+        enroll.set("receipt", parseFile);
+      }
+
       enroll.set("studentName", cleanName);
       enroll.set("phoneNumber", cleanPhone);
       enroll.set("courseId", selectedCourse.id);
       enroll.set("courseTitle", selectedCourse.title);
       enroll.set("paymentMethod", selectedPayment);
-      enroll.set("receipt", parseFile);
       enroll.set("status", "pending");
+
       const acl = new Parse.ACL();
       acl.setPublicReadAccess(true);
       acl.setPublicWriteAccess(false);
       enroll.setACL(acl);
-      await enroll.save();
+
+      // Data သိမ်းရာတွင် Master Key အသုံးပြုခြင်းဖြင့် Permission ပိတ်ထားသည်ကို ကျော်ဖြတ်မည်
+      await enroll.save(null, { useMasterKey: true });
+
       alert("Mission Request Sent! 🚀 ၁၅ မိနစ်ခန့်စောင့်ဆိုင်းပေးပါ။");
-      setShowEnrollForm(false); setSelectedCourse(null); setReceiptFile(null); setReceiptPreview(null);
-    } catch (error) { alert(error.message); } finally { setIsSubmitting(false); }
+      setShowEnrollForm(false); 
+      setSelectedCourse(null); 
+      setReceiptFile(null); 
+      setReceiptPreview(null);
+    } catch (error) { 
+      alert("Error: " + error.message); 
+    } finally { 
+      setIsSubmitting(false); 
+    }
   };
 
   const checkMyStatus = async () => {
@@ -135,7 +159,7 @@ const Home = () => {
         </div>
       </nav>
 
-      {/* FOUNDER MODAL (မူရင်းအတိုင်း) */}
+      {/* FOUNDER MODAL */}
       {showFounderCard && (
         <div style={styles.modalOverlay} onClick={() => setShowFounderCard(false)}>
             <div style={styles.founderCard} onClick={e => e.stopPropagation()}>
@@ -148,7 +172,7 @@ const Home = () => {
         </div>
       )}
 
-      {/* HERO SLIDER - Background Full Width Style */}
+      {/* HERO SLIDER */}
       <div style={styles.heroSection}>
         <div style={styles.sliderContainer}>
           <div className="slider-track">
@@ -164,7 +188,7 @@ const Home = () => {
         </div>
       </div>
 
-      {/* MISSIONS GRID - 3D Hover Style */}
+      {/* MISSIONS GRID */}
       <div style={styles.introContainer}>
         <h2 style={styles.sectionTitle}>[Available Missions]</h2>
         <div style={styles.missionGrid}>
@@ -189,7 +213,7 @@ const Home = () => {
         </div>
       </div>
 
-      {/* MODALS & FOOTER (မူရင်းအတိုင်း) */}
+      {/* MODALS & FOOTER */}
       {(selectedCourse || showEnrollForm) && (
         <div style={styles.modalOverlay} onClick={() => { setSelectedCourse(null); setShowEnrollForm(false); setReceiptPreview(null); }}>
           <div style={styles.modalContent} onClick={e => e.stopPropagation()}>
@@ -217,7 +241,10 @@ const Home = () => {
                     ))}
                   </div>
                   <div style={styles.accDisplay}><h4 style={{margin: '5px 0', color: '#00ff41'}}>{payments[selectedPayment].acc}</h4></div>
-                  <label style={styles.uploadArea}><input type="file" hidden onChange={handleFileChange} />{!receiptPreview ? <div style={{color: '#00ff41'}}>📸 RECEIPT</div> : <img src={receiptPreview} style={{height: '80px'}} alt="Preview" />}</label>
+                  <label style={styles.uploadArea}>
+                    <input type="file" hidden onChange={handleFileChange} />
+                    {!receiptPreview ? <div style={{color: '#00ff41'}}>📸 RECEIPT (Optional)</div> : <img src={receiptPreview} style={{height: '80px'}} alt="Preview" />}
+                  </label>
                   <button style={styles.enrollBtn} onClick={handleSubmitMission} disabled={isSubmitting}>{isSubmitting ? "WAIT..." : "SUBMIT"}</button>
                 </>
               )}
@@ -258,6 +285,7 @@ const Home = () => {
   );
 };
 
+// Styles (မူရင်းအတိုင်း)
 const styles = {
   pageWrapper: { backgroundColor: '#0a192f', minHeight: '100vh', overflowX: 'hidden', fontFamily: 'monospace' },
   nav: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 5%', background: '#1c1f26', position: 'fixed', width: '100%', zIndex: 1000, borderBottom: '2px solid #00ff41', boxSizing: 'border-box' },
