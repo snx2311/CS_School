@@ -23,8 +23,8 @@ const Home = () => {
   const [studentName, setStudentName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [selectedPayment, setSelectedPayment] = useState('kpay');
-  const [receiptFile, setReceiptFile] = useState(null);
-  const [receiptPreview, setReceiptPreview] = useState(null);
+  const [transactionId, setTransactionId] = useState(''); // ထပ်တိုး
+  const [senderAccountName, setSenderAccountName] = useState(''); // ထပ်တိုး
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [checkPhone, setCheckPhone] = useState('');
   const [statusResult, setStatusResult] = useState(null);
@@ -46,23 +46,11 @@ const Home = () => {
   };
 
   const handleEnrollClick = (course) => { setSelectedCourse(course); setShowEnrollForm(true); };
-  
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) { setReceiptFile(file); setReceiptPreview(URL.createObjectURL(file)); }
-  };
 
-  // မူရင်း handleSubmitMission ကို Permission error ကျော်ရန်နှင့် ပုံမပါလည်းရရန် ပြင်ဆင်ထားသော အပိုင်း
+  // Master Key မပါဝင်သော handleSubmitMission (စာသားသီးသန့်)
   const handleSubmitMission = async () => {
-    // ပုံ (receiptFile) ကို စစ်ဆေးချက်ထဲမှ ဖယ်ထုတ်ထားသည်
-    if (!studentName || !phoneNumber) { 
-      alert("အမည်နှင့် ဖုန်းနံပါတ်ကို ဖြည့်စွက်ပေးပါ။"); 
-      return; 
-    }
-    const cleanName = studentName.trim();
-    const cleanPhone = phoneNumber.trim();
-    if (cleanName.includes("<") || cleanPhone.includes("<")) { 
-      alert("Invalid Input Detected!"); 
+    if (!studentName || !phoneNumber || !transactionId || !senderAccountName) { 
+      alert("အချက်အလက်အားလုံး ပြည့်စုံစွာ ဖြည့်စွက်ပေးပါ။"); 
       return; 
     }
 
@@ -71,15 +59,10 @@ const Home = () => {
       const Enroll = Parse.Object.extend("Enrollments");
       const enroll = new Enroll();
       
-      // ပုံရှိမှသာ Save လုပ်မည်၊ { useMasterKey: true } ထည့်ထားသဖြင့် Error မတက်တော့ပါ
-      if (receiptFile) {
-        const parseFile = new Parse.File("receipt.jpg", receiptFile);
-        await parseFile.save({ useMasterKey: true });
-        enroll.set("receipt", parseFile);
-      }
-
-      enroll.set("studentName", cleanName);
-      enroll.set("phoneNumber", cleanPhone);
+      enroll.set("studentName", studentName.trim());
+      enroll.set("phoneNumber", phoneNumber.trim());
+      enroll.set("transactionId", transactionId.trim());
+      enroll.set("senderAccountName", senderAccountName.trim());
       enroll.set("courseId", selectedCourse.id);
       enroll.set("courseTitle", selectedCourse.title);
       enroll.set("paymentMethod", selectedPayment);
@@ -90,14 +73,13 @@ const Home = () => {
       acl.setPublicWriteAccess(false);
       enroll.setACL(acl);
 
-      // Data သိမ်းရာတွင် Master Key အသုံးပြုခြင်းဖြင့် Permission ပိတ်ထားသည်ကို ကျော်ဖြတ်မည်
-      await enroll.save(null, { useMasterKey: true });
+      await enroll.save();
 
       alert("Mission Request Sent! 🚀 ၁၅ မိနစ်ခန့်စောင့်ဆိုင်းပေးပါ။");
       setShowEnrollForm(false); 
-      setSelectedCourse(null); 
-      setReceiptFile(null); 
-      setReceiptPreview(null);
+      setSelectedCourse(null);
+      setTransactionId('');
+      setSenderAccountName('');
     } catch (error) { 
       alert("Error: " + error.message); 
     } finally { 
@@ -215,7 +197,7 @@ const Home = () => {
 
       {/* MODALS & FOOTER */}
       {(selectedCourse || showEnrollForm) && (
-        <div style={styles.modalOverlay} onClick={() => { setSelectedCourse(null); setShowEnrollForm(false); setReceiptPreview(null); }}>
+        <div style={styles.modalOverlay} onClick={() => { setSelectedCourse(null); setShowEnrollForm(false); }}>
           <div style={styles.modalContent} onClick={e => e.stopPropagation()}>
             <div style={styles.modalMain}>
               {!showEnrollForm ? (
@@ -231,8 +213,8 @@ const Home = () => {
               ) : (
                 <>
                   <h3 style={{ color: '#00ff41', textAlign: 'center' }}>REGISTRATION</h3>
-                  <input style={styles.input} placeholder="NAME" onChange={e => setStudentName(e.target.value)} />
-                  <input style={styles.input} placeholder="PHONE" onChange={e => setPhoneNumber(e.target.value)} />
+                  <input style={styles.input} placeholder="NAME (အမည်)" onChange={e => setStudentName(e.target.value)} />
+                  <input style={styles.input} placeholder="PHONE (ဖုန်းနံပါတ်)" onChange={e => setPhoneNumber(e.target.value)} />
                   <div style={styles.paymentFlex}>
                     {Object.keys(payments).map(key => (
                       <div key={key} onClick={() => setSelectedPayment(key)} style={{...styles.payIconBox, borderColor: selectedPayment === key ? '#00ff41' : '#233554'}}>
@@ -241,11 +223,12 @@ const Home = () => {
                     ))}
                   </div>
                   <div style={styles.accDisplay}><h4 style={{margin: '5px 0', color: '#00ff41'}}>{payments[selectedPayment].acc}</h4></div>
-                  <label style={styles.uploadArea}>
-                    <input type="file" hidden onChange={handleFileChange} />
-                    {!receiptPreview ? <div style={{color: '#00ff41'}}>📸 RECEIPT (Optional)</div> : <img src={receiptPreview} style={{height: '80px'}} alt="Preview" />}
-                  </label>
-                  <button style={styles.enrollBtn} onClick={handleSubmitMission} disabled={isSubmitting}>{isSubmitting ? "WAIT..." : "SUBMIT"}</button>
+                  
+                  {/* ပြေစာအစား ထည့်ရမည့် အချက်အလက်သစ်များ */}
+                  <input style={styles.input} placeholder="SENDER ACC NAME (လွှဲသူအမည်)" onChange={e => setSenderAccountName(e.target.value)} />
+                  <input style={styles.input} placeholder="TRANSACTION ID (နောက်ဆုံး ၆ လုံး)" onChange={e => setTransactionId(e.target.value)} />
+                  
+                  <button style={styles.enrollBtn} onClick={handleSubmitMission} disabled={isSubmitting}>{isSubmitting ? "WAIT..." : "SUBMIT MISSION"}</button>
                 </>
               )}
             </div>
@@ -285,7 +268,6 @@ const Home = () => {
   );
 };
 
-// Styles (မူရင်းအတိုင်း)
 const styles = {
   pageWrapper: { backgroundColor: '#0a192f', minHeight: '100vh', overflowX: 'hidden', fontFamily: 'monospace' },
   nav: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 5%', background: '#1c1f26', position: 'fixed', width: '100%', zIndex: 1000, borderBottom: '2px solid #00ff41', boxSizing: 'border-box' },

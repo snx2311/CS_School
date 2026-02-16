@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+// မူရင်းကုဒ်အတိုင်း Parse ကိုသာ အသုံးပြုထားပြီး မသုံးသော Link ကို ဖြုတ်ထားပါသည်
 import Parse from 'parse';
 
 const AdminPortal = () => {
@@ -31,20 +31,15 @@ const AdminPortal = () => {
     }
   };
 
-  // --- အဓိက ပြင်ဆင်ထားသော အပိုင်း (Approve Logic) ---
   const handleApprove = async (id) => {
     try {
-      // ၁။ မူရင်း query.get() အစား Cloud Function ကို လှမ်းခေါ်ပြီး Approve လုပ်ခိုင်းပါမယ်
-      // အဲ့ဒါမှ Master Key နဲ့ Database ထဲမှာ တကယ် Update ဖြစ်မှာပါ
+      // Cloud Function သုံးပြီး Approve လုပ်ခြင်း (မူရင်းအတိုင်း)
       await Parse.Cloud.run("approveEnrollment", { enrollmentId: id });
-      
-      alert("Mission Approved! ✅ Database Updated.");
-      
-      // ၂။ UI မှာ ချက်ချင်း Update ဖြစ်အောင် စာရင်းပြန်ခေါ်မယ်
+      alert("Mission Approved! ✅ Student can now access the dashboard.");
       fetchEnrollments();
     } catch (error) {
       console.error("Approve Error:", error);
-      alert("Error: " + error.message + "\n(Cloud Code ကို Deploy အရင်လုပ်ထားဖို့ လိုအပ်ပါတယ်)");
+      alert("Error: " + error.message);
     }
   };
 
@@ -76,40 +71,40 @@ const AdminPortal = () => {
     <div style={{ backgroundColor: '#0a192f', minHeight: '100vh', color: '#00ff41', padding: '40px', fontFamily: 'monospace' }}>
       
       {/* SECTION 1: STUDENT REQUESTS (APPROVE ပေးရန်) */}
-      <div style={{ maxWidth: '1000px', margin: '0 auto 60px auto' }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto 60px auto' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h1 style={{ borderLeft: '4px solid #00ff41', paddingLeft: '15px' }}>🚀 PENDING MISSIONS (Enrollments)</h1>
           <button onClick={fetchEnrollments} style={{ ...styles.approveBtn, background: 'transparent', border: '1px solid #00ff41', color: '#00ff41' }}>REFRESH</button>
         </div>
-        <p style={{ color: '#8892b0' }}>ကျောင်းသားများပို့ထားသော ငွေလွဲပြေစာများကို စစ်ဆေးရန်</p>
+        <p style={{ color: '#8892b0' }}>ငွေလွဲ Transaction ID များနှင့် Sender Name များကို စစ်ဆေးရန်</p>
         
         {isLoading ? <p>Loading Data...</p> : (
           <div style={{ overflowX: 'auto' }}>
             <table style={styles.table}>
               <thead>
                 <tr style={styles.tableHeader}>
-                  <th style={{ padding: '15px' }}>NAME</th>
+                  <th style={{ padding: '15px' }}>STUDENT NAME</th>
                   <th>PHONE</th>
                   <th>COURSE</th>
-                  <th>RECEIPT</th>
+                  {/* အသစ်ပြင်ဆင်လိုက်သော Column များ */}
+                  <th>SENDER NAME</th>
+                  <th>TRANSACTION ID</th>
                   <th>STATUS</th>
                   <th>ACTION</th>
                 </tr>
               </thead>
               <tbody>
                 {requests.length === 0 ? (
-                  <tr><td colSpan="6" style={{ textAlign: 'center', padding: '20px', color: '#8892b0' }}>No requests found.</td></tr>
+                  <tr><td colSpan="7" style={{ textAlign: 'center', padding: '20px', color: '#8892b0' }}>No requests found.</td></tr>
                 ) : (
                   requests.map((req) => (
                     <tr key={req.id} style={styles.tableRow}>
                       <td style={{ padding: '15px' }}>{req.get("studentName")}</td>
                       <td>{req.get("phoneNumber")}</td>
                       <td>{req.get("courseTitle")}</td>
-                      <td>
-                        {req.get("receipt") ? (
-                          <a href={req.get("receipt").url()} target="_blank" rel="noreferrer" style={{color: '#00ff41', textDecoration: 'underline'}}>VIEW IMG</a>
-                        ) : "No File"}
-                      </td>
+                      {/* Database မှ တိုက်ရိုက်ယူပြီး ပြသခြင်း */}
+                      <td style={{ color: '#fff' }}>{req.get("senderAccountName") || "N/A"}</td>
+                      <td style={{ color: '#00ff41', fontWeight: 'bold' }}>{req.get("transactionId") || "N/A"}</td>
                       <td style={{ color: req.get("status") === 'pending' ? '#ffcc00' : '#00ff41', fontWeight: 'bold' }}>
                         {req.get("status") ? req.get("status").toUpperCase() : "NULL"}
                       </td>
@@ -132,7 +127,7 @@ const AdminPortal = () => {
       {/* SECTION 2: ADD NEW COURSE */}
       <div style={{ maxWidth: '600px', margin: '0 auto' }}>
         <h1 style={{ textAlign: 'center' }}>➕ ADD / UPDATE CLASS</h1>
-        <p style={{ textAlign: 'center', color: '#8892b0', fontSize: '13px' }}>သင်တန်းအချက်အလက်များကို Database ထသို့ တိုက်ရိုက်သိမ်းဆည်းရန်</p>
+        <p style={{ textAlign: 'center', color: '#8892b0', fontSize: '13px' }}>သင်တန်းအချက်အလက်များကို Database ထဲသို့ တိုက်ရိုက်သိမ်းဆည်းရန်</p>
         
         <form onSubmit={handleSubmitCourse} style={styles.form}>
           <div style={styles.inputGroup}>
@@ -174,7 +169,7 @@ const AdminPortal = () => {
 };
 
 const styles = {
-  table: { width: '100%', borderCollapse: 'collapse', marginTop: '20px', background: '#112240', fontSize: '14px' },
+  table: { width: '100%', borderCollapse: 'collapse', marginTop: '20px', background: '#112240', fontSize: '14px', minWidth: '850px' },
   tableHeader: { borderBottom: '2px solid #00ff41', textAlign: 'left', color: '#8892b0' },
   tableRow: { borderBottom: '1px solid #233554' },
   approveBtn: { background: '#00ff41', border: 'none', padding: '8px 15px', cursor: 'pointer', fontWeight: 'bold', fontSize: '11px', color: '#0a192f' },
