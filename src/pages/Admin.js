@@ -1,20 +1,29 @@
 import React, { useState, useEffect } from 'react';
-// မူရင်းကုဒ်အတိုင်း Parse ကိုသာ အသုံးပြုထားပြီး မသုံးသော Link ကို ဖြုတ်ထားပါသည်
 import Parse from 'parse';
 
 const AdminPortal = () => {
-  // --- PART 1: ADD COURSE STATES ---
+  // --- PART 1: ADD COURSE STATES (Paid Courses - မူရင်းအတိုင်း) ---
   const [courseData, setCourseData] = useState({
     courseId: '', title: '', instructor: '', zoomLink: '', videoLink: '', schedule: ''
   });
   const [addStatus, setAddStatus] = useState('');
 
-  // --- PART 2: STUDENT ENROLLMENTS STATES ---
+  // --- PART 2: STUDENT ENROLLMENTS STATES (မူရင်းအတိုင်း) ---
   const [requests, setRequests] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  // --- PART 3: NEW! FREE COURSE STATES (ထပ်တိုး) ---
+  const [freeCourseData, setFreeCourseData] = useState({
+    title: '', vidId: '', detail: ''
+  });
+  const [freeImage, setFreeImage] = useState(null);
+  const [freePdf, setFreePdf] = useState(null);
+  const [freeStatus, setFreeStatus] = useState('');
+  const [liveFreeCourses, setLiveFreeCourses] = useState([]); // ဖျက်ရန် list အတွက်
+
   useEffect(() => {
     fetchEnrollments();
+    fetchLiveFreeCourses(); // Free courses စာရင်းဆွဲရန်
   }, []);
 
   const fetchEnrollments = async () => {
@@ -31,25 +40,44 @@ const AdminPortal = () => {
     }
   };
 
+  // Free Course များကို ဆွဲထုတ်ရန် (Delete Control အတွက်)
+  const fetchLiveFreeCourses = async () => {
+    try {
+      const query = new Parse.Query("FreeCourses");
+      query.descending("createdAt");
+      const results = await query.find();
+      setLiveFreeCourses(results);
+    } catch (e) { console.log(e); }
+  };
+
   const handleApprove = async (id) => {
     try {
-      // Cloud Function သုံးပြီး Approve လုပ်ခြင်း (မူရင်းအတိုင်း)
       await Parse.Cloud.run("approveEnrollment", { enrollmentId: id });
-      alert("Mission Approved! ✅ Student can now access the dashboard.");
+      alert("Mission Approved! ✅");
       fetchEnrollments();
     } catch (error) {
-      console.error("Approve Error:", error);
       alert("Error: " + error.message);
     }
   };
 
+  // Free Course ဖျက်ရန် Logic (အသစ်ထည့်သွင်းမှု)
+  const handleDeleteFreeCourse = async (id) => {
+    if (!window.confirm("Are you sure you want to DELETE this mission?")) return;
+    try {
+      const query = new Parse.Query("FreeCourses");
+      const obj = await query.get(id);
+      await obj.destroy();
+      alert("Mission Deleted! 🗑️");
+      fetchLiveFreeCourses();
+    } catch (e) { alert("Delete Error: " + e.message); }
+  };
+
+  // Paid Course သိမ်းဆည်းခြင်း (မူရင်းအတိုင်း)
   const handleSubmitCourse = async (e) => {
     e.preventDefault();
     setAddStatus('Processing...');
-    
     const Course = Parse.Object.extend("Classes");
     const newCourse = new Course();
-    
     try {
       newCourse.set("courseId", courseData.courseId.toLowerCase());
       newCourse.set("title", courseData.title);
@@ -57,9 +85,7 @@ const AdminPortal = () => {
       newCourse.set("zoomLink", courseData.zoomLink);
       newCourse.set("videoLink", courseData.videoLink);
       newCourse.set("schedule", courseData.schedule);
-      
       await newCourse.save();
-      
       setAddStatus('New Class Added Successfully! ✅');
       setCourseData({ courseId: '', title: '', instructor: '', zoomLink: '', videoLink: '', schedule: '' });
     } catch (error) { 
@@ -67,17 +93,48 @@ const AdminPortal = () => {
     }
   };
 
+  // --- PART 4: NEW! FREE COURSE SUBMIT LOGIC (ထပ်တိုး) ---
+  const handleFreeCourseSubmit = async (e) => {
+    e.preventDefault();
+    setFreeStatus('Uploading to Mission Control...');
+    
+    try {
+      const FreeCourse = Parse.Object.extend("FreeCourses");
+      const fCourse = new FreeCourse();
+
+      fCourse.set("title", freeCourseData.title);
+      fCourse.set("vidId", freeCourseData.vidId);
+      fCourse.set("detail", freeCourseData.detail);
+
+      if (freeImage) {
+        const parseImage = new Parse.File(freeImage.name, freeImage);
+        fCourse.set("image", parseImage);
+      }
+      if (freePdf) {
+        const parsePdf = new Parse.File(freePdf.name, freePdf);
+        fCourse.set("pdf", parsePdf);
+      }
+
+      await fCourse.save();
+      setFreeStatus('Free Mission Published Successfully! 🚀');
+      setFreeCourseData({ title: '', vidId: '', detail: '' });
+      setFreeImage(null);
+      setFreePdf(null);
+      fetchLiveFreeCourses(); // ဖျက်ရန် list ကို update လုပ်ရန်
+    } catch (error) {
+      setFreeStatus('Error: ' + error.message);
+    }
+  };
+
   return (
     <div style={{ backgroundColor: '#0a192f', minHeight: '100vh', color: '#00ff41', padding: '40px', fontFamily: 'monospace' }}>
       
-      {/* SECTION 1: STUDENT REQUESTS (APPROVE ပေးရန်) */}
+      {/* SECTION 1: STUDENT REQUESTS (မူရင်းအတိုင်း) */}
       <div style={{ maxWidth: '1200px', margin: '0 auto 60px auto' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h1 style={{ borderLeft: '4px solid #00ff41', paddingLeft: '15px' }}>🚀 PENDING MISSIONS (Enrollments)</h1>
+          <h1 style={{ borderLeft: '4px solid #00ff41', paddingLeft: '15px' }}>🚀 PENDING MISSIONS</h1>
           <button onClick={fetchEnrollments} style={{ ...styles.approveBtn, background: 'transparent', border: '1px solid #00ff41', color: '#00ff41' }}>REFRESH</button>
         </div>
-        <p style={{ color: '#8892b0' }}>ငွေလွဲ Transaction ID များနှင့် Sender Name များကို စစ်ဆေးရန်</p>
-        
         {isLoading ? <p>Loading Data...</p> : (
           <div style={{ overflowX: 'auto' }}>
             <table style={styles.table}>
@@ -86,7 +143,6 @@ const AdminPortal = () => {
                   <th style={{ padding: '15px' }}>STUDENT NAME</th>
                   <th>PHONE</th>
                   <th>COURSE</th>
-                  {/* အသစ်ပြင်ဆင်လိုက်သော Column များ */}
                   <th>SENDER NAME</th>
                   <th>TRANSACTION ID</th>
                   <th>STATUS</th>
@@ -94,91 +150,98 @@ const AdminPortal = () => {
                 </tr>
               </thead>
               <tbody>
-                {requests.length === 0 ? (
-                  <tr><td colSpan="7" style={{ textAlign: 'center', padding: '20px', color: '#8892b0' }}>No requests found.</td></tr>
-                ) : (
-                  requests.map((req) => (
-                    <tr key={req.id} style={styles.tableRow}>
-                      <td style={{ padding: '15px' }}>{req.get("studentName")}</td>
-                      <td>{req.get("phoneNumber")}</td>
-                      <td>{req.get("courseTitle")}</td>
-                      {/* Database မှ တိုက်ရိုက်ယူပြီး ပြသခြင်း */}
-                      <td style={{ color: '#fff' }}>{req.get("senderAccountName") || "N/A"}</td>
-                      <td style={{ color: '#00ff41', fontWeight: 'bold' }}>{req.get("transactionId") || "N/A"}</td>
-                      <td style={{ color: req.get("status") === 'pending' ? '#ffcc00' : '#00ff41', fontWeight: 'bold' }}>
-                        {req.get("status") ? req.get("status").toUpperCase() : "NULL"}
-                      </td>
-                      <td>
-                        {req.get("status") === 'pending' && (
-                          <button onClick={() => handleApprove(req.id)} style={styles.approveBtn}>APPROVE</button>
-                        )}
-                      </td>
-                    </tr>
-                  ))
-                )}
+                {requests.map((req) => (
+                  <tr key={req.id} style={styles.tableRow}>
+                    <td style={{ padding: '15px' }}>{req.get("studentName")}</td>
+                    <td>{req.get("phoneNumber")}</td>
+                    <td>{req.get("courseTitle")}</td>
+                    <td style={{ color: '#fff' }}>{req.get("senderAccountName") || "N/A"}</td>
+                    <td style={{ color: '#00ff41', fontWeight: 'bold' }}>{req.get("transactionId") || "N/A"}</td>
+                    <td style={{ color: req.get("status") === 'pending' ? '#ffcc00' : '#00ff41' }}>
+                      {req.get("status")?.toUpperCase()}
+                    </td>
+                    <td>
+                      {req.get("status") === 'pending' && (
+                        <button onClick={() => handleApprove(req.id)} style={styles.approveBtn}>APPROVE</button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
         )}
       </div>
 
-      <hr style={{ borderColor: '#233554', margin: '40px 0' }} />
-
-      {/* SECTION 2: ADD NEW COURSE */}
-      <div style={{ maxWidth: '600px', margin: '0 auto' }}>
-        <h1 style={{ textAlign: 'center' }}>➕ ADD / UPDATE CLASS</h1>
-        <p style={{ textAlign: 'center', color: '#8892b0', fontSize: '13px' }}>သင်တန်းအချက်အလက်များကို Database ထဲသို့ တိုက်ရိုက်သိမ်းဆည်းရန်</p>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px', maxWidth: '1200px', margin: '0 auto' }}>
         
-        <form onSubmit={handleSubmitCourse} style={styles.form}>
-          <div style={styles.inputGroup}>
-            <label style={styles.label}>COURSE ID (Must match Home.js id)</label>
-            <input placeholder="e.g., linux, cyber, net" style={styles.input} value={courseData.courseId} onChange={(e) => setCourseData({...courseData, courseId: e.target.value})} required />
-          </div>
+        {/* SECTION 2: ADD PAID COURSE (မူရင်းအတိုင်း) */}
+        <div>
+          <h2 style={{ textAlign: 'center' }}>➕ PAID CLASS</h2>
+          <form onSubmit={handleSubmitCourse} style={styles.form}>
+            <input placeholder="COURSE ID" style={styles.input} value={courseData.courseId} onChange={(e) => setCourseData({...courseData, courseId: e.target.value})} required />
+            <input placeholder="DISPLAY TITLE" style={styles.input} value={courseData.title} onChange={(e) => setCourseData({...courseData, title: e.target.value})} required />
+            <input placeholder="INSTRUCTOR" style={styles.input} value={courseData.instructor} onChange={(e) => setCourseData({...courseData, instructor: e.target.value})} />
+            <input placeholder="ZOOM LINK" style={styles.input} value={courseData.zoomLink} onChange={(e) => setCourseData({...courseData, zoomLink: e.target.value})} />
+            <input placeholder="YOUTUBE ID" style={styles.input} value={courseData.videoLink} onChange={(e) => setCourseData({...courseData, videoLink: e.target.value})} />
+            <input placeholder="SCHEDULE" style={styles.input} value={courseData.schedule} onChange={(e) => setCourseData({...courseData, schedule: e.target.value})} />
+            <button type="submit" style={styles.btn}>SAVE PAID CLASS</button>
+            {addStatus && <div style={styles.statusMsg}>{addStatus}</div>}
+          </form>
+        </div>
 
-          <div style={styles.inputGroup}>
-            <label style={styles.label}>DISPLAY TITLE</label>
-            <input placeholder="Course Full Name" style={styles.input} value={courseData.title} onChange={(e) => setCourseData({...courseData, title: e.target.value})} required />
-          </div>
+        {/* SECTION 3: NEW! ADD FREE COURSE (အသစ်ထည့်သွင်းမှု) */}
+        <div>
+          <h2 style={{ textAlign: 'center', color: '#fff' }}>🎁 FREE MISSION</h2>
+          <form onSubmit={handleFreeCourseSubmit} style={{...styles.form, borderColor: '#fff'}}>
+            <input placeholder="MISSION TITLE" style={styles.input} value={freeCourseData.title} onChange={(e) => setFreeCourseData({...freeCourseData, title: e.target.value})} required />
+            <input placeholder="YOUTUBE VIDEO ID" style={styles.input} value={freeCourseData.vidId} onChange={(e) => setFreeCourseData({...freeCourseData, vidId: e.target.value})} required />
+            <textarea placeholder="MISSION DETAILS/DESCRIPTIONS" style={{...styles.input, height: '80px'}} value={freeCourseData.detail} onChange={(e) => setFreeCourseData({...freeCourseData, detail: e.target.value})} required />
+            
+            <div style={styles.inputGroup}>
+              <label style={styles.label}>COURSE COVER IMAGE (JPG/PNG)</label>
+              <input type="file" accept="image/*" style={styles.input} onChange={(e) => setFreeImage(e.target.files[0])} />
+            </div>
 
-          <div style={styles.inputGroup}>
-            <label style={styles.label}>INSTRUCTOR NAME</label>
-            <input placeholder="Teacher Name" style={styles.input} value={courseData.instructor} onChange={(e) => setCourseData({...courseData, instructor: e.target.value})} />
-          </div>
+            <div style={styles.inputGroup}>
+              <label style={styles.label}>GUIDE PDF (Optional)</label>
+              <input type="file" accept="application/pdf" style={styles.input} onChange={(e) => setFreePdf(e.target.files[0])} />
+            </div>
 
-          <div style={styles.inputGroup}>
-            <label style={styles.label}>ZOOM / LIVE MEETING LINK</label>
-            <input placeholder="https://zoom.us/j/..." style={styles.input} value={courseData.zoomLink} onChange={(e) => setCourseData({...courseData, zoomLink: e.target.value})} />
-          </div>
+            <button type="submit" style={{...styles.btn, background: '#fff'}}>PUBLISH FREE MISSION</button>
+            {freeStatus && <div style={{...styles.statusMsg, borderColor: '#fff'}}>{freeStatus}</div>}
+          </form>
 
-          <div style={styles.inputGroup}>
-            <label style={styles.label}>YOUTUBE VIDEO ID (Recorded)</label>
-            <input placeholder="e.g., yv_vPAtE_kQ" style={styles.input} value={courseData.videoLink} onChange={(e) => setCourseData({...courseData, videoLink: e.target.value})} />
+          {/* DELETE FREE MISSIONS CONTROL (အသစ်ထည့်သွင်းမှု) */}
+          <div style={{ marginTop: '30px', borderTop: '1px solid #233554', paddingTop: '20px' }}>
+            <h3 style={{ color: '#ff4b2b', textAlign: 'center' }}>🗑️ DELETE MISSIONS</h3>
+            <div style={{ maxHeight: '200px', overflowY: 'auto', background: '#0a192f', padding: '10px', borderRadius: '5px' }}>
+              {liveFreeCourses.map(c => (
+                <div key={c.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px', borderBottom: '1px solid #233554', alignItems: 'center' }}>
+                  <span style={{ fontSize: '11px', color: '#fff' }}>{c.get("title")}</span>
+                  <button onClick={() => handleDeleteFreeCourse(c.id)} style={{ background: '#ff4b2b', color: '#fff', border: 'none', padding: '3px 8px', fontSize: '10px', cursor: 'pointer' }}>DELETE</button>
+                </div>
+              ))}
+            </div>
           </div>
+        </div>
 
-          <div style={styles.inputGroup}>
-            <label style={styles.label}>CLASS SCHEDULE</label>
-            <input placeholder="e.g., Sat & Sun (7:00 PM)" style={styles.input} value={courseData.schedule} onChange={(e) => setCourseData({...courseData, schedule: e.target.value})} />
-          </div>
-
-          <button type="submit" style={styles.btn}>SAVE TO DATABASE</button>
-        </form>
-        {addStatus && <div style={styles.statusMsg}>{addStatus}</div>}
       </div>
     </div>
   );
 };
 
 const styles = {
-  table: { width: '100%', borderCollapse: 'collapse', marginTop: '20px', background: '#112240', fontSize: '14px', minWidth: '850px' },
+  table: { width: '100%', borderCollapse: 'collapse', marginTop: '20px', background: '#112240', fontSize: '12px' },
   tableHeader: { borderBottom: '2px solid #00ff41', textAlign: 'left', color: '#8892b0' },
   tableRow: { borderBottom: '1px solid #233554' },
-  approveBtn: { background: '#00ff41', border: 'none', padding: '8px 15px', cursor: 'pointer', fontWeight: 'bold', fontSize: '11px', color: '#0a192f' },
-  form: { display: 'flex', flexDirection: 'column', gap: '20px', background: '#112240', padding: '30px', borderRadius: '5px', border: '1px solid #233554' },
+  approveBtn: { background: '#00ff41', border: 'none', padding: '8px 15px', cursor: 'pointer', fontWeight: 'bold', color: '#0a192f' },
+  form: { display: 'flex', flexDirection: 'column', gap: '15px', background: '#112240', padding: '25px', borderRadius: '5px', border: '1px solid #233554' },
   inputGroup: { display: 'flex', flexDirection: 'column', gap: '5px' },
-  label: { fontSize: '11px', color: '#8892b0', fontWeight: 'bold' },
+  label: { fontSize: '10px', color: '#8892b0' },
   input: { padding: '12px', background: '#0a192f', border: '1px solid #233554', color: '#00ff41', outline: 'none', fontFamily: 'monospace' },
-  btn: { padding: '15px', background: '#00ff41', color: '#0a192f', fontWeight: 'bold', border: 'none', cursor: 'pointer', marginTop: '10px', fontSize: '16px' },
-  statusMsg: { marginTop: '20px', padding: '10px', border: '1px solid #00ff41', textAlign: 'center', background: 'rgba(0, 255, 65, 0.1)' }
+  btn: { padding: '15px', background: '#00ff41', color: '#0a192f', fontWeight: 'bold', border: 'none', cursor: 'pointer' },
+  statusMsg: { marginTop: '10px', padding: '8px', border: '1px solid #00ff41', textAlign: 'center', fontSize: '12px' }
 };
 
 export default AdminPortal;
